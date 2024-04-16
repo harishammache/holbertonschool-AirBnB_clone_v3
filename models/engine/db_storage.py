@@ -14,7 +14,8 @@ from models.user import User
 from os import getenv
 import sqlalchemy
 from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker, Session
+from sqlalchemy.exc import SQLAlchemyError
 
 classes = {"Amenity": Amenity, "City": City,
            "Place": Place, "Review": Review, "State": State, "User": User}
@@ -74,3 +75,32 @@ class DBStorage:
     def close(self):
         """call remove() method on the private session attribute"""
         self.__session.remove()
+
+    def get(self, cls, id):
+        """Return object based on the class and id"""
+        session = Session()
+
+        try:
+            result = session.query(cls).filter_by(id=id).one_or_none()
+            if result:
+                return result
+        except SQLAlchemyError as e:
+            print("Error :", str(e))
+            return None
+        finally:
+            session.close
+
+    def count(self, cls=None):
+        try:
+            if cls:
+                count = self.__session.query(cls).count()
+            else:
+                count = 0
+                for model_cls in classes:
+                    count += self.__session.query(model_cls).count()
+            return count
+        except SQLAlchemyError as e:
+            print("Error counting objects:", str(e))
+            return None
+        finally:
+            self.__session.close()
