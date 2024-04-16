@@ -14,7 +14,7 @@ app.register_blueprint(app_views, url_prefix='/api/v1')
 
 
 @app.teardown_appcontext
-def close_storage():
+def close_storage(exception=None):
     """call the storage"""
     storage.close()
 
