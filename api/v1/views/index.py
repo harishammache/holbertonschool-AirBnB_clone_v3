@@ -33,5 +33,6 @@ def number_object():
         "reviews": Review,
         "users": User
     }
-    counts = {cls_key: storage.count(cls_val) for cls_key, cls_val in classes.items()}
+    counts = {cls_key: storage.count(cls_val)
+              for cls_key, cls_val in classes.items()}
     return jsonify(counts)
