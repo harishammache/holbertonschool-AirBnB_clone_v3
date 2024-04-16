@@ -78,29 +78,24 @@ class DBStorage:
 
     def get(self, cls, id):
         """Return object based on the class and id"""
-        session = Session()
-
+        if cls not in classes.values():
+            return None
         try:
-            result = session.query(cls).filter_by(id=id).one_or_none()
-            if result:
-                return result
+            result = self.__session.query(cls).filter_by(id=id).one_or_none()
+            return result
         except SQLAlchemyError as e:
             print("Error :", str(e))
             return None
-        finally:
-            session.close
 
     def count(self, cls=None):
         try:
-            if cls:
-                count = self.__session.query(cls).count()
+            if cls and cls in classes.values():
+                return self.__session.query(cls).count()
             else:
                 count = 0
-                for model_cls in classes:
+                for model_cls in classes.values():
                     count += self.__session.query(model_cls).count()
-            return count
+                return count
         except SQLAlchemyError as e:
             print("Error counting objects:", str(e))
             return None
-        finally:
-            self.__session.close()

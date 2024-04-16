@@ -85,4 +85,5 @@ class FileStorage:
                 if isinstance(obj, cls):
                     total_isinstance += 1
         else:
-            len(FileStorage.__objects)
+            return len(FileStorage.__objects)
+        return total_isinstance
