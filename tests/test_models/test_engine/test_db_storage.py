@@ -86,3 +86,60 @@ class TestFileStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
+
+class TestDBStorage(unittest.TestCase):
+    """Tests for the DBStorage methods get and count."""
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get_returns_object(self):
+        """Test the get method returns the correct object when it exists."""
+        state = State(name="California")
+        models.storage.new(state)
+        models.storage.save()
+        state_id = state.id
+        retrieved_state = models.storage.get(State, state_id)
+        self.assertEqual(retrieved_state.id, state_id)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get_returns_none_for_invalid_id(self):
+        """Test the get method returns None for an invalid ID."""
+        self.assertIsNone(models.storage.get(State, "99999"))
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get_returns_none_for_invalid_class(self):
+        """Test the get method returns None for an invalid class."""
+        self.assertIsNone(models.storage.get("FakeClass", "1234"))
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_count_returns_correct_number_for_class(self):
+        """Test the count method returns correct number for a specific class."""
+        initial_count = models.storage.count(State)
+        models.storage.new(State(name="Nevada"))
+        models.storage.save()
+        self.assertEqual(models.storage.count(State), initial_count + 1)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_count_returns_total_number(self):
+        """Test the count method returns total number when no class is passed."""
+        initial_total = models.storage.count()
+        models.storage.new(State(name="Utah"))
+        models.storage.save()
+        self.assertEqual(models.storage.count(), initial_total + 1)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_count_with_invalid_class(self):
+        """Test the count method returns 0 for an invalid class."""
+        self.assertEqual(models.storage.count("FakeClass"), 0)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def setUp(self):
+        """Setup new objects that might be used in multiple tests."""
+        self.state = State(name="Test State")
+        models.storage.new(self.state)
+        models.storage.save()
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def tearDown(self):
+        """Cleanup any leftover objects."""
+        models.storage.delete(self.state)
+        models.storage.save()
