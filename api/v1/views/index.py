@@ -24,6 +24,7 @@ def status():
 @app_views.route("/stats", methods=['GET'], strict_slashes=False)
 def number_object():
     """retrieves the number of each objects by type"""
+
     classes = {
         "states": State,
         "cities": City,
