@@ -6,11 +6,15 @@
 
 from flask import Flask, jsonify
 from models import storage
+from flask_cors import CORS
 from api.v1.views import app_views
 from os import getenv
 
 # create a flask application instance
 app = Flask(__name__)
+
+# Enable Cross-Origin Resource Sharing (CORS) for the Flask application.
+CORS(app, resources={r"/api/*": {"origins": "0.0.0.0"}})
 
 # register the blueprint
 app.register_blueprint(app_views)
