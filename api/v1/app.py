@@ -4,7 +4,7 @@
 """
 
 
-from flask import Flask
+from flask import Flask, jsonify
 from models import storage
 from api.v1.views import app_views
 from os import getenv
@@ -14,6 +14,17 @@ app = Flask(__name__)
 
 # register the blueprint
 app.register_blueprint(app_views)
+
+
+# appelle la fonction page_not_found quand flask rencontre une erreur 404
+@app.errorhandler(404)
+def page_not_found(error):
+    """ Error handler for 404 (Not Found) errors"""
+    # creer une réponse json pour l'erreur 404
+    response = jsonify({"error": "Not found"})
+    # definis le code d'état http sur 404
+    response.status_code = 404
+    return response
 
 
 @app.teardown_appcontext
