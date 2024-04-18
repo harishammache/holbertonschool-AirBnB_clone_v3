@@ -3,11 +3,12 @@
     create and envirnment variable and a variable app instance of flask
 """
 
-
+from flask_cors import CORS
 from flask import Flask, jsonify
 from models import storage
 from api.v1.views import app_views
 from os import getenv
+cors = CORS(app_views, resources={r"/*": {"origins": "0.0.0.0"}})
 
 # create a flask application instance
 app = Flask(__name__)
